@@ -16,55 +16,67 @@ import {
   Save,
   UserPlus,
 } from "lucide-react";
+import api from "@/lib/api";
+import { User as UserType } from "@/types";
 
-// Mock data for demonstration
-const mockUsers = [
-  {
-    id: "1",
-    name: "John Doe",
-    email: "john@example.com",
-    role: "admin",
-    createdAt: "2024-01-15T10:30:00Z",
-  },
-  {
-    id: "2",
-    name: "Jane Smith",
-    email: "jane@example.com",
-    role: "staff",
-    createdAt: "2024-01-16T14:20:00Z",
-  },
-  {
-    id: "3",
-    name: "Mike Johnson",
-    email: "mike@example.com",
-    role: "staff",
-    createdAt: "2024-01-17T09:15:00Z",
-  },
-  {
-    id: "4",
-    name: "Sarah Wilson",
-    email: "sarah@example.com",
-    role: "admin",
-    createdAt: "2024-01-18T16:45:00Z",
-  },
-  {
-    id: "5",
-    name: "Tom Brown",
-    email: "tom@example.com",
-    role: "staff",
-    createdAt: "2024-01-19T11:30:00Z",
-  },
-];
+// // Mock data for demonstration
+// const mockUsers = [
+//   {
+//     id: "1",
+//     name: "John Doe",
+//     email: "john@example.com",
+//     role: "admin",
+//     createdAt: "2024-01-15T10:30:00Z",
+//   },
+//   {
+//     id: "2",
+//     name: "Jane Smith",
+//     email: "jane@example.com",
+//     role: "staff",
+//     createdAt: "2024-01-16T14:20:00Z",
+//   },
+//   {
+//     id: "3",
+//     name: "Mike Johnson",
+//     email: "mike@example.com",
+//     role: "staff",
+//     createdAt: "2024-01-17T09:15:00Z",
+//   },
+//   {
+//     id: "4",
+//     name: "Sarah Wilson",
+//     email: "sarah@example.com",
+//     role: "admin",
+//     createdAt: "2024-01-18T16:45:00Z",
+//   },
+//   {
+//     id: "5",
+//     name: "Tom Brown",
+//     email: "tom@example.com",
+//     role: "staff",
+//     createdAt: "2024-01-19T11:30:00Z",
+//   },
+// ];
 
 const UserManagement = () => {
-  const [users, setUsers] = useState(mockUsers);
+  const [users, setUsers] = useState<UserType[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
-  const [modalMode, setModalMode] = useState("add"); // 'add', 'edit', 'view'
-  const [selectedUser, setSelectedUser] = useState(null);
+  const [modalMode, setModalMode] = useState("add");
+  const [selectedUser, setSelectedUser] = useState<any>(null);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const getUsers = async () => {
+      const res = await api.get("/user");
+      console.log("users", res.data.data.users);
+      const data = res.data.data.users;
+      setUsers(data);
+    };
+    getUsers();
+  }, []);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -74,10 +86,10 @@ const UserManagement = () => {
   });
 
   const usersPerPage = 5;
-  const currentUserRole = "admin"; // This would come from auth context
+  const currentUserRole = "admin";
 
   // Filter and search logic
-  const filteredUsers = users.filter((user) => {
+  const filteredUsers = users.filter((user: any) => {
     const matchesSearch =
       user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.email.toLowerCase().includes(searchTerm.toLowerCase());
@@ -98,7 +110,7 @@ const UserManagement = () => {
     setSelectedUser(null);
   };
 
-  const openModal = (mode, user = null) => {
+  const openModal = (mode: any, user = null as any) => {
     setModalMode(mode);
     if (user) {
       setSelectedUser(user);
@@ -130,18 +142,14 @@ const UserManagement = () => {
           ...formData,
           createdAt: new Date().toISOString(),
         };
-        setUsers([...users, newUser]);
+        api.post("/user", newUser);
+        window.location.reload();
       } else if (modalMode === "edit") {
-        // Edit user logic
-        setUsers(
-          users.map((user) =>
-            user.id === selectedUser?.id
-              ? { ...user, ...formData, updatedAt: new Date().toISOString() }
-              : user
-          )
-        );
+        console.log("user");
+        api.put(`/user/${selectedUser?._id}`, formData);
+        window.location.reload();
       }
-      closeModal();
+      //   closeModal();
     } catch (error) {
       console.error("Error:", error);
     } finally {
@@ -150,8 +158,10 @@ const UserManagement = () => {
   };
 
   const handleDelete = async (userId: any) => {
+    console.log("userid", userId);
     if (window.confirm("Are you sure you want to delete this user?")) {
-      setUsers(users.filter((user) => user.id !== userId));
+      api.delete(`/user/${userId}`);
+      window.location.reload();
     }
   };
 
@@ -212,7 +222,10 @@ const UserManagement = () => {
               </div>
               <div>
                 <h3 className="text-2xl font-bold text-gray-900">
-                  {users.filter((u) => u.role === "admin").length}
+                  {
+                    // @ts-ignore
+                    users.filter((u) => u.role === "admin").length
+                  }
                 </h3>
                 <p className="text-gray-600">Administrators</p>
               </div>
@@ -226,7 +239,10 @@ const UserManagement = () => {
               </div>
               <div>
                 <h3 className="text-2xl font-bold text-gray-900">
-                  {users.filter((u) => u.role === "staff").length}
+                  {
+                    // @ts-ignore
+                    users.filter((u) => u.role === "staff").length
+                  }
                 </h3>
                 <p className="text-gray-600">Staff Members</p>
               </div>
@@ -301,7 +317,7 @@ const UserManagement = () => {
               <tbody className="divide-y divide-gray-100">
                 {paginatedUsers.map((user) => (
                   <tr
-                    key={user.id}
+                    key={user._id}
                     className="hover:bg-gray-50 transition-colors"
                   >
                     <td className="py-4 px-6">
@@ -347,9 +363,9 @@ const UserManagement = () => {
                         >
                           <Edit2 className="h-4 w-4" />
                         </button>
-                        {currentUserRole === "admin" && user.id !== "1" && (
+                        {currentUserRole === "admin" && user._id !== "1" && (
                           <button
-                            onClick={() => handleDelete(user.id)}
+                            onClick={() => handleDelete(user._id)}
                             className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
                             title="Delete User"
                           >

@@ -1,7 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Plus, Edit2, Trash2, Package, Settings } from "lucide-react";
+import api from "@/lib/api";
+import { Category } from "@/types";
 
 const CategoryManager = () => {
   const [categories, setCategories] = useState([
@@ -12,8 +14,18 @@ const CategoryManager = () => {
   ]);
 
   const [showForm, setShowForm] = useState(false);
-  const [editingCategory, setEditingCategory] = useState(null);
-  const [formData, setFormData] = useState({ name: "", type: "Product" });
+  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+  const [formData, setFormData] = useState({ name: "", type: "product" });
+
+  useEffect(() => {
+    const getCategories = async () => {
+      const res = await api.get("/category");
+      const data = res.data.data;
+      console.log("data ", data);
+      setCategories(data);
+    };
+    getCategories();
+  }, []);
 
   const handleSubmit = () => {
     if (!formData.name.trim()) return;
@@ -21,7 +33,7 @@ const CategoryManager = () => {
     if (editingCategory) {
       setCategories(
         categories.map((cat) =>
-          cat.id === editingCategory.id
+          cat.id === (editingCategory._id as any)
             ? { ...cat, name: formData.name, type: formData.type }
             : cat
         )
@@ -32,7 +44,8 @@ const CategoryManager = () => {
         name: formData.name,
         type: formData.type,
       };
-      setCategories([...categories, newCategory]);
+      api.post("/category", newCategory);
+      // window.location.reload();
     }
 
     resetForm();
@@ -116,8 +129,8 @@ const CategoryManager = () => {
                       }
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                     >
-                      <option value="Product">Product</option>
-                      <option value="Service">Service</option>
+                      <option value="product">Product</option>
+                      <option value="service">Service</option>
                     </select>
                   </div>
 

@@ -11,6 +11,7 @@ import {
   Filter,
   X,
 } from "lucide-react";
+import { Category } from "@/types";
 
 const ProductServiceManager = () => {
   const [items, setItems] = useState([
@@ -57,7 +58,7 @@ const ProductServiceManager = () => {
   ]);
 
   const [showForm, setShowForm] = useState(false);
-  const [editingItem, setEditingItem] = useState(null);
+  const [editingItem, setEditingItem] = useState<Category | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterCategory, setFilterCategory] = useState("");
   const [priceRange, setPriceRange] = useState({ min: "", max: "" });
@@ -96,7 +97,7 @@ const ProductServiceManager = () => {
     }
 
     const newItem = {
-      id: editingItem ? editingItem.id : Date.now(),
+      id: editingItem ? (editingItem._id as any) : Date.now(),
       name: formData.name,
       category: formData.category,
       description: formData.description,
@@ -108,7 +109,9 @@ const ProductServiceManager = () => {
 
     if (editingItem) {
       setItems(
-        items.map((item) => (item.id === editingItem.id ? newItem : item))
+        items.map((item) =>
+          item.id === (editingItem._id as any) ? newItem : item
+        )
       );
     } else {
       setItems([...items, newItem]);
