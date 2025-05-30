@@ -1,4 +1,4 @@
-import { Document } from "mongoose";
+import { Document, Types } from "mongoose";
 import { Request } from "express";
 
 // user types
@@ -25,6 +25,7 @@ export interface IUserInput {
 export interface ICategory extends Document {
   name: string;
   type: "product" | "service";
+  createdBy: Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
 }

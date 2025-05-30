@@ -4,13 +4,9 @@ import Category from "../models/Category";
 import {
   CreateCategoryRequest,
   UpdateCategoryRequest,
-  GetCategoriesRequest,
   GetCategoryRequest,
   DeleteCategoryRequest,
   CategoryResponse,
-  CategoriesResponse,
-  CategoryStatsResponse,
-  CategoryStatsResult,
 } from "../types/category";
 import { AuthTypes, ICategory } from "../types/index";
 
@@ -94,62 +90,25 @@ export const createCategory = async (
 // @route   GET /api/categories
 // @access  Private
 export const getCategories = async (
-  req: GetCategoriesRequest,
-  res: Response<CategoriesResponse>
+  req: Request,
+  res: Response
 ): Promise<void> => {
   try {
-    const {
-      type,
-      search,
-      page = "1",
-      limit = "10",
-      sortBy = "createdAt",
-      sortOrder = "desc",
-    } = req.query;
+    const categories = await Category.find({});
 
-    // Build query
-    const query: any = { isActive: true };
-
-    if (type && ["product", "service"].includes(type)) {
-      query.type = type;
-    }
-
-    if (search) {
-      query.$or = [{ name: { $regex: search, $options: "i" } }];
-    }
-
-    // Pagination
-    const pageNum = parseInt(page, 10);
-    const limitNum = parseInt(limit, 10);
-    const skip = (pageNum - 1) * limitNum;
-
-    const sortOptions: any = {};
-    sortOptions[sortBy] = sortOrder === "desc" ? -1 : 1;
-
-    // Execute query
-    const categories: ICategory[] = await Category.find(query)
-      .populate("createdBy", "name email")
-      .sort(sortOptions)
-      .skip(skip)
-      .limit(limitNum);
-
-    const total = await Category.countDocuments(query);
+    console.log("Found categories:", categories.length);
 
     res.json({
       success: true,
       data: categories,
-      pagination: {
-        current: pageNum,
-        pages: Math.ceil(total / limitNum),
-        total,
-        limit: limitNum,
-      },
+      total: categories.length,
     });
   } catch (error: any) {
     console.error("Get categories error:", error);
     res.status(500).json({
       success: false,
       message: "Server error while fetching categories",
+      error: error.message,
     });
   }
 };

@@ -1,7 +1,7 @@
 import express from "express";
 import {
   createCategory,
-  getCategories,
+  // getCategories,
   getCategory,
   updateCategory,
   deleteCategory,
@@ -13,7 +13,7 @@ const categoryRouter = express.Router();
 // Public routes (none for categories)
 
 // GET /api/categories - Get all categories with optional filtering
-categoryRouter.get("/", getCategories);
+// categoryRouter.get("/", getCategories);
 
 // POST /api/categories - Create new category
 categoryRouter.post("/", createCategory);

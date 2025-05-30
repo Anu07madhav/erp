@@ -18,6 +18,9 @@ const categorySchema = new Schema<ICategory>(
         message: "Type must be either product or service",
       },
     },
+    createdBy: {
+      type: Schema.Types.ObjectId,
+    },
   },
   {
     timestamps: true,
