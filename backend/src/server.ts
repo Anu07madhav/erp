@@ -2,6 +2,7 @@ import express, { Application, Request, Response, NextFunction } from "express";
 import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
+import apiRouter from "./routes";
 
 // Load environment variables
 dotenv.config();
@@ -24,6 +25,10 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
   next();
 });
+
+// Routes
+
+app.use("/api", apiRouter);
 
 // Database connection
 const connectDB = async (): Promise<void> => {

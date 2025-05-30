@@ -7,6 +7,8 @@ import supplierRouter from "./supplier";
 
 const v1Router = express.Router();
 
+console.log("inside v1");
+
 v1Router.use("/auth", authRouter);
 v1Router.use("/user", userRouter);
 v1Router.use("/category", categoryRouter);

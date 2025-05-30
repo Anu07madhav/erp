@@ -9,6 +9,7 @@ import { auth } from "../../middleware/authmiddleware";
 
 const authRouter = express.Router();
 
+console.log("auth");
 // @route   POST /api/auth/register
 // @desc    Register a new user
 // @access  Public
