@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import Link from "next/link";
-// import api from "@/lib/api";
+import api from "@/lib/api";
 
 interface RegisterForm {
   name: string;
@@ -28,14 +28,15 @@ export default function RegisterPage() {
 
   const onSubmit = async (data: RegisterForm) => {
     setLoading(true);
-
+    console.log("name", data.name);
     try {
-      //   await api.post("/auth/register", {
-      //     name: data.name,
-      //     email: data.email,
-      //     password: data.password,
-      //     role: data.role,
-      //   });
+      const res = await api.post("/auth/register", {
+        name: data.name,
+        email: data.email,
+        password: data.password,
+        role: data.role,
+      });
+      console.log("response", res);
 
       toast.success("Registration successful! Please login.");
       router.push("/login");
@@ -118,8 +119,8 @@ export default function RegisterPage() {
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
               >
                 <option value="">Select Role</option>
-                <option value="Admin">Admin</option>
-                <option value="Staff">Staff</option>
+                <option value="admin">admin</option>
+                <option value="staff">staff</option>
               </select>
               {errors.role && (
                 <p className="mt-1 text-sm text-red-600">

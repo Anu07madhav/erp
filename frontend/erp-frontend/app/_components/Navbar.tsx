@@ -129,6 +129,12 @@ export default function Navbar() {
             >
               Products
             </Link>
+            <Link
+              href="/users"
+              className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800"
+            >
+              Users
+            </Link>
           </div>
         </div>
       )}

@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-// import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/context/AuthContext";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import Link from "next/link";
@@ -12,7 +12,7 @@ interface LoginForm {
 }
 
 export default function LoginPage() {
-  //   const { login } = useAuth();
+  const { login } = useAuth();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
